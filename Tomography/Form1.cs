@@ -21,6 +21,8 @@ namespace Tomography
         int currentLayer = 0;
         int FrameCount;
         DateTime NextFPSUpdate = DateTime.Now.AddSeconds(1);
+        int min = 0;
+        int space = 2000;
         public Form1()
         {
             InitializeComponent();
@@ -55,23 +57,46 @@ namespace Tomography
         {
             if (loaded)
             {
-                view.DrawQuads(currentLayer);
+                draw(sender, e);
                 glControl1.SwapBuffers();
             }
+        }
+
+        void draw(object sender, PaintEventArgs e)
+        {
+            if (loaded)
+            {
+                if (radioButton1.Checked) view.DrawStrips(currentLayer, min, space);
+                if (radioButton2.Checked)
+                {
+                    if (needReload)
+                    {
+                        view.generateTextureImage(currentLayer, min, space);
+                        view.Load2DTexture();
+                        needReload = false;
+                    }
+                    view.DrawTexture();
+                }
+                if (radioButton3.Checked) view.DrawQuads(currentLayer, min, space);
+            }
+            Form1_Load(sender, e);
+            needReload = true;
         }
 
         void trackBar1_Scroll(object sender, EventArgs e)
         {
             trackBar1.Maximum = Bin.z - 1;
             currentLayer = trackBar1.Value;
-            if (loaded)
-            {   
-                if (radioButton3.Checked)view.DrawQuads(currentLayer);
-                if (radioButton2.Checked) view.generateTextureImage(currentLayer);
-                glControl1.SwapBuffers();
-            }
-            Form1_Load(sender, e);
-            needReload = true;
+            glControl1.Invalidate();
+/*            draw(sender, e);*/
+            /*            if (loaded)
+                        {   
+                            if (radioButton3.Checked)view.DrawQuads(currentLayer);
+                            if (radioButton2.Checked) view.generateTextureImage(currentLayer);
+                            glControl1.SwapBuffers();
+                        }
+                        Form1_Load(sender, e);
+                        needReload = true;*/
         }
 
         void Application_Idle(object sender, EventArgs e)
@@ -98,20 +123,6 @@ namespace Tomography
 
         }
         bool needReload = false;
-        private void glControl1_Paint(object sender, EventArgs e)
-        {
-            if (loaded)
-            {
-                if(needReload)
-                {
-                    view.generateTextureImage(currentLayer);
-                    view.Load2DTexture();
-                    needReload = false;
-                }
-                view.DrawTexture();
-                glControl1.SwapBuffers();
-            }
-        }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -123,15 +134,47 @@ namespace Tomography
 
         }
 
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton1.Checked == true)
+            {
+                radioButton2.Checked = false;
+                radioButton3.Checked = false;
+            }
+        }
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            if (radioButton2.Checked == true) radioButton3.Checked = false;
+            if (radioButton2.Checked == true)
+            {
+                radioButton1.Checked = false;
+                radioButton3.Checked = false;
+            }
         }
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
-            if (radioButton3.Checked == true) radioButton2.Checked = false;
+            if (radioButton3.Checked == true)
+            {
+                radioButton1.Checked = false;
+                radioButton2.Checked = false;
+            }
         }
+
+        private void trackBar3_Scroll(object sender, EventArgs e)
+        {
+            min = trackBar3.Value;
+            glControl1.Invalidate();
+            /*            draw(sender, e);*/
+        }
+
+        private void trackBar4_Scroll(object sender, EventArgs e)
+        {
+            space = trackBar4.Value;
+            glControl1.Invalidate();
+            /*            draw(sender, e);*/
+        }
+
+
     }
 
     class Bin
@@ -178,39 +221,63 @@ namespace Tomography
             GL.Ortho(0, Bin.x, 0, Bin.y, -1, 1);
             GL.Viewport(0, 0, width, heigth);
         }
-        public Color transferfunction(short value)
+        public Color transferfunction(short value, int _min, int space)
         {
-            int min = 0;
-            int max = 2000;
+            int min = _min;
+            int max = min + space;
             int newVal = clamp((value - min) * 255 / (max - min), 0, 255);
             return Color.FromArgb(255, newVal, newVal, newVal);
         }
-        public void DrawQuads(int layerNumber)
+        public void DrawQuads(int layerNumber, int min, int space)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Begin(BeginMode.Quads);
+            GL.Begin(PrimitiveType.Quads);
             for (int x_coord = 0; x_coord < Bin.x - 1; x_coord++)
                 for (int y_coord = 0; y_coord < Bin.y - 1; y_coord++)
                 {
                     short value;
                     value = Bin.array[x_coord + y_coord * Bin.x + layerNumber * Bin.x * Bin.y];
-                    GL.Color3(transferfunction(value));
+                    GL.Color3(transferfunction(value, min, space));
                     GL.Vertex2(x_coord, y_coord);
 
                     value = Bin.array[x_coord + (y_coord + 1) * Bin.x + layerNumber * Bin.x * Bin.y];
-                    GL.Color3(transferfunction(value));
+                    GL.Color3(transferfunction(value, min, space));
                     GL.Vertex2(x_coord, y_coord + 1);
 
                     value = Bin.array[x_coord + 1 + (y_coord + 1) * Bin.x + layerNumber * Bin.x * Bin.y];
-                    GL.Color3(transferfunction(value));
+                    GL.Color3(transferfunction(value, min, space));
                     GL.Vertex2(x_coord + 1, y_coord + 1);
 
                     value = Bin.array[x_coord + 1 + y_coord * Bin.x + layerNumber * Bin.x * Bin.y];
-                    GL.Color3(transferfunction(value));
+                    GL.Color3(transferfunction(value, min, space));
                     GL.Vertex2(x_coord + 1, y_coord);
                 }
             GL.End();
         }
+
+        public void DrawStrips(int layerNumber, int min, int space)
+        {
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            short value;
+            int x_coord = 0;
+            int y_coord = 0;
+            for (x_coord = 0; x_coord < Bin.x - 1; x_coord++)
+            {
+                GL.Begin(PrimitiveType.QuadStrip);
+                for (y_coord = 0; y_coord < Bin.y - 1; y_coord++)
+                {
+                    value = Bin.array[x_coord + y_coord * Bin.x + layerNumber * Bin.x * Bin.y];
+                    GL.Color3(transferfunction(value, min, space));
+                    GL.Vertex2(x_coord, y_coord);
+
+                    value = Bin.array[x_coord + 1 + y_coord * Bin.x + layerNumber * Bin.x * Bin.y];
+                    GL.Color3(transferfunction(value, min, space));
+                    GL.Vertex2(x_coord + 1, y_coord);
+                }
+                GL.End();
+            }
+        }
+
         int VBOtexture;
         Bitmap textureImage;
         public void Load2DTexture()
@@ -230,14 +297,14 @@ namespace Tomography
             ErrorCode Er = GL.GetError();
             string str = Er.ToString();
         }
-        public void generateTextureImage(int layerNumber)
+        public void generateTextureImage(int layerNumber, int min, int space)
         {
             textureImage = new Bitmap(Bin.x, Bin.y);
             for (int i = 0; i < Bin.x; ++i) 
                 for(int j=0;j<Bin.y;++j)
                 {
                     int pixelNumber = i + j * Bin.x + layerNumber * Bin.x * Bin.y;
-                    textureImage.SetPixel(i, j, transferfunction(Bin.array[pixelNumber]));
+                    textureImage.SetPixel(i, j, transferfunction(Bin.array[pixelNumber], min, space));
                 }
         }
     
@@ -248,7 +315,7 @@ namespace Tomography
             GL.Enable(EnableCap.Texture2D);
             GL.BindTexture(TextureTarget.Texture2D, VBOtexture);
 
-            GL.Begin(BeginMode.Quads);
+            GL.Begin(PrimitiveType.Quads);
             GL.Color3(Color.White);
             GL.TexCoord2(0f, 0f);
             GL.Vertex2(0, 0);

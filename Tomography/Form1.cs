@@ -50,6 +50,8 @@ namespace Tomography
                 view.setupview(glControl1.Width, glControl1.Height);
                 loaded = true;
                 glControl1.Invalidate();
+                trackBar1.Maximum = Bin.z - 1;
+                Form1_Load(sender, e);
             }
         }
 
@@ -79,13 +81,12 @@ namespace Tomography
                 }
                 if (radioButton3.Checked) view.DrawQuads(currentLayer, min, space);
             }
-            Form1_Load(sender, e);
+/*            Form1_Load(sender, e);*/
             needReload = true;
         }
 
         void trackBar1_Scroll(object sender, EventArgs e)
         {
-            trackBar1.Maximum = Bin.z - 1;
             currentLayer = trackBar1.Value;
             glControl1.Invalidate();
 /*            draw(sender, e);*/

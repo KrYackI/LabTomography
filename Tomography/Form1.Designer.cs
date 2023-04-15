@@ -39,6 +39,8 @@
             this.trackBar3 = new System.Windows.Forms.TrackBar();
             this.trackBar4 = new System.Windows.Forms.TrackBar();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).BeginInit();
@@ -101,7 +103,7 @@
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(691, 383);
+            this.radioButton2.Location = new System.Drawing.Point(654, 379);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(57, 17);
             this.radioButton2.TabIndex = 5;
@@ -114,7 +116,7 @@
             // 
             this.radioButton3.AutoSize = true;
             this.radioButton3.Checked = true;
-            this.radioButton3.Location = new System.Drawing.Point(691, 406);
+            this.radioButton3.Location = new System.Drawing.Point(654, 402);
             this.radioButton3.Name = "radioButton3";
             this.radioButton3.Size = new System.Drawing.Size(54, 17);
             this.radioButton3.TabIndex = 6;
@@ -125,7 +127,7 @@
             // 
             // trackBar3
             // 
-            this.trackBar3.Location = new System.Drawing.Point(571, 383);
+            this.trackBar3.Location = new System.Drawing.Point(544, 383);
             this.trackBar3.Maximum = 2000;
             this.trackBar3.Name = "trackBar3";
             this.trackBar3.Size = new System.Drawing.Size(104, 45);
@@ -134,7 +136,7 @@
             // 
             // trackBar4
             // 
-            this.trackBar4.Location = new System.Drawing.Point(571, 416);
+            this.trackBar4.Location = new System.Drawing.Point(544, 413);
             this.trackBar4.Maximum = 2000;
             this.trackBar4.Minimum = 1;
             this.trackBar4.Name = "trackBar4";
@@ -146,7 +148,7 @@
             // radioButton1
             // 
             this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(691, 429);
+            this.radioButton1.Location = new System.Drawing.Point(654, 425);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(49, 17);
             this.radioButton1.TabIndex = 9;
@@ -155,11 +157,33 @@
             this.radioButton1.UseVisualStyleBackColor = true;
             this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(717, 384);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(71, 23);
+            this.button1.TabIndex = 10;
+            this.button1.Text = "min";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(717, 413);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(71, 23);
+            this.button2.TabIndex = 11;
+            this.button2.Text = "max";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.trackBar4);
             this.Controls.Add(this.trackBar3);
@@ -197,6 +221,8 @@
         private System.Windows.Forms.TrackBar trackBar3;
         private System.Windows.Forms.TrackBar trackBar4;
         private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }
 

@@ -11,6 +11,8 @@ using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing.Imaging;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 namespace Tomography
 {
     public partial class Form1 : Form
@@ -21,8 +23,8 @@ namespace Tomography
         int currentLayer = 0;
         int FrameCount;
         DateTime NextFPSUpdate = DateTime.Now.AddSeconds(1);
-        int min = 0;
-        int space = 2000;
+        int min;
+        int space;
         public Form1()
         {
             InitializeComponent();
@@ -49,8 +51,14 @@ namespace Tomography
                 Bin.readBin(str);
                 view.setupview(glControl1.Width, glControl1.Height);
                 loaded = true;
-                glControl1.Invalidate();
                 trackBar1.Maximum = Bin.z - 1;
+                trackBar3.Minimum = Bin.min();
+                trackBar3.Maximum = Bin.max() - 255;
+                trackBar4.Maximum = Bin.max() - 1 - Bin.min();
+                trackBar4.Value = 2000;
+                min = 0;
+                space = 2000;
+                glControl1.Invalidate();
                 Form1_Load(sender, e);
             }
         }
@@ -175,7 +183,17 @@ namespace Tomography
             /*            draw(sender, e);*/
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            short min = Bin.min();
+            button1.Text = min.ToString();
+        }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            short max = Bin.max();
+            button2.Text = max.ToString();
+        }
     }
 
     class Bin
@@ -198,6 +216,26 @@ namespace Tomography
                 for (int i = 0; i < arraysize; i++)
                     array[i] = reader.ReadInt16();
             }
+        }
+
+        public static short min()
+        {
+            short min = short.MaxValue;
+            int arraysize = x * y * z;
+            for (int i = 0; i < arraysize; i++)
+                if (array[i] < min)
+                    min = array[i]; 
+                return min;
+        }
+
+        public static short max()
+        {
+            short max = short.MinValue;
+            int arraysize = x * y * z;
+            for (int i = 0; i < arraysize; i++)
+                if (array[i] > max)
+                    max = array[i];
+            return max;
         }
 
     }

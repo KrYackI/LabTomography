@@ -53,8 +53,8 @@ namespace Tomography
                 loaded = true;
                 trackBar1.Maximum = Bin.z - 1;
                 trackBar3.Minimum = Bin.min();
-                trackBar3.Maximum = Bin.max() - 255;
-                trackBar4.Maximum = Bin.max() - 1 - Bin.min();
+                trackBar3.Maximum = Bin.max() - 1;
+                trackBar4.Maximum = Bin.max() - Bin.min();
                 trackBar4.Value = 2000;
                 min = 0;
                 space = 2000;
@@ -172,6 +172,8 @@ namespace Tomography
         private void trackBar3_Scroll(object sender, EventArgs e)
         {
             min = trackBar3.Value;
+            trackBar4.Maximum = Bin.max() - min;
+            space = view.clamp(space, 1, trackBar4.Maximum);
             glControl1.Invalidate();
             /*            draw(sender, e);*/
         }
